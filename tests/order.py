@@ -8,5 +8,3 @@ sample_order = {
     "country": "PK",
 }
 
-
-print(calc(sample_order))

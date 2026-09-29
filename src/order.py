@@ -1,43 +1,36 @@
-def calc(o):
-    t = 0
-    for i in o["items"]:
-        p = i["price"]
-        q = i["qty"]
-        if p > 0:
-            if q > 0:
-                t = t + p * q
-    if o["member"] == True:
-        if t > 100:
-            d = t * 0.2
-        else:
-            if t > 50:
-                d = t * 0.1
-            else:
-                d = 0
-    else:
-        d = 0
-    t = t - d
-    if o["country"] == "PK":
-        s = 5
-    else:
-        if o["country"] == "US":
-            s = 15
-        else:
-            s = 25
-    t = t + s
-    print("Total: " + str(t))
-    return t
+def calculate_subtotal(items: list[dict[str, int]]) -> int:
+    total = 0
+    for item in items:
+        price = item["price"]
+        quantity = item["qty"]
+        if price <= 0:
+            continue
+        if quantity <= 0:
+            continue
+        total = total + price * quantity
+    return total
 
+def calculate_discount(total: int, is_member: bool) -> float:
+    if is_member != True:
+        return 0
+    if total > 100:
+        return total * 0.2
+    if total > 50:
+        return total * 0.1
+    return 0
 
-sample_order = {
-    "items": [
-        {"price": 25.0, "qty": 2},
-        {"price": 40.0, "qty": 1},
-        {"price": -5.0, "qty": 3},
-    ],
-    "member": True,
-    "country": "PK",
-}
+def calculate_shipping(country: str) -> int:
+    if country == "PK":
+        return 5
+    if country == "US":
+        return 15
+    return 25
 
-
-print(calc(sample_order))
+def calculate_total(order: dict) -> float:
+    subtotal = calculate_subtotal(order["items"])
+    discount = calculate_discount(subtotal, order["member"])
+    total = subtotal - discount
+    shipping = calculate_shipping(order["country"])
+    total = total + shipping
+    print("Total: " + str(total))
+    return total
